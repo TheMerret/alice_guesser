@@ -17,6 +17,21 @@ def get_coordinates(city):
     return point_array
 
 
+def get_country(city_name):
+    url = "https://geocode-maps.yandex.ru/1.x/"
+    params = {
+        'geocode': city_name,
+        'format': 'json',
+        'apikey': "40d1649f-0493-4b70-98ba-98533de7710b"
+    }
+    response = requests.get(url, params)
+    json = response.json()
+    point_str = \
+    json["response"]["GeoObjectCollection"]["featureMember"][0]["GeoObject"]["metaDataProperty"]["GeocoderMetaData"][
+        "AddressDetails"]["Country"]["CountryName"]
+
+    return point_str
+
 
 def get_distance(p1, p2):
     R = 6373.0
