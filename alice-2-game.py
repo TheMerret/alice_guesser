@@ -7,6 +7,16 @@ app = Flask(__name__)
 
 logging.basicConfig(level=logging.INFO)
 
+description = """
+Игра "Угадай город"
+
+Представтесь, затем начнется игра.
+
+Перед Вами картинка города. Сможете угадать какого? Если не угадаете - ничего страшного, подскажем.
+
+После удачи вы може сыграть еще раз.
+"""
+
 cities = {
     'москва': ['1540737/daa6e420d33102bf6947', '213044/7df73ae4cc715175059e'],
     'нью-йорк': ['1652229/728d5c86707054d4745f', '1030494/aca7ed7acefde2606bdc'],
@@ -98,12 +108,19 @@ def handle_dialog(res, req):
                     }
                 ]
         else:
+            if "помощь" in req["request"]["nlu"]["tokens"]:
+                res['response']['text'] = description
             play_game(res, req)
 
 
 def play_game(res, req):
     user_id = req['session']['user_id']
     attempt = sessionStorage[user_id]['attempt']
+    res["response"]["buttons"] = [
+        {
+            "title": "Помощь"
+        }
+                ]
     if attempt == 1:
         # если попытка первая, то случайным образом выбираем город для гадания
         city = random.choice(list(cities))
