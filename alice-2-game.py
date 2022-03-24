@@ -21,15 +21,18 @@ description = """
 cities = {
     'москва': {
         "images": ['1540737/daa6e420d33102bf6947', '213044/7df73ae4cc715175059e'],
-        "url": "https://yandex.ru/maps/?mode=search&text=Москва"
+        "url": "https://yandex.ru/maps/?mode=search&text=Москва",
+        "country": "россия",
     },
     'нью-йорк': {
         "images": ['1652229/728d5c86707054d4745f', '1030494/aca7ed7acefde2606bdc'],
-        "url": "https://yandex.ru/maps/?mode=search&text=Нью-Йорк"
+        "url": "https://yandex.ru/maps/?mode=search&text=Нью-Йорк",
+        "country": "сша",
                  },
     'париж': {
         "images": ["1652229/f77136c2364eb90a3ea8", '123494/aca7ed7acefd12e606bdc'],
-        "url": "https://yandex.ru/maps/?mode=search&text=Париж"
+        "url": "https://yandex.ru/maps/?mode=search&text=Париж",
+        "country": "франция",
     },
 }
 
@@ -153,28 +156,44 @@ def play_game(res, req):
     else:
         # сюда попадаем, если попытка отгадать не первая
         city = sessionStorage[user_id]['city']
+        if sessionStorage[user_id]["is_city_guessed"]:
+            # угадываем страну
+            if get_geo_entity(req) == cities["city"]["country"]:
+                res['response']['text'] = 'Правильно! Сыграем ещё?'
+                res['response']['buttons'] = [
+                                                 {
+                                                     'title': 'Да',
+                                                     'hide': True
+                                                 },
+                                                 {
+                                                     'title': 'Нет',
+                                                     'hide': True
+                                                 },
+                                                 {
+                                                     "title": "Покажи город на карте",
+                                                     "url": cities[city]["url"],
+                                                     "hide": True
+                                                 }
+                                             ] + res['response'].get("buttons", [])
+                sessionStorage[user_id]['game_started'] = False
+                return
+            else:
+                if attempt == 4:
+                    res['response']['text'] = (f'Вы пытались.'
+                                               f' Это {cities["city"]["country"].capitalize()}.'
+                                               f' Сыграем ещё?')
+                    sessionStorage[user_id]['game_started'] = False
+                    return
+                else:
+                    res['response']['text'] = "Неверно. Поробуйте еще раз."
         # проверяем есть ли правильный ответ в сообщение
-        if get_city(req) == city:
+        elif get_geo_entity(req) == city:
             # если да, то добавляем город к sessionStorage[user_id]['guessed_cities'] и
             # отправляем пользователя на второй круг. Обратите внимание на этот шаг на схеме.
-            res['response']['text'] = 'Правильно! Сыграем ещё?'
-            res['response']['buttons'] = [
-                {
-                    'title': 'Да',
-                    'hide': True
-                },
-                {
-                    'title': 'Нет',
-                    'hide': True
-                },
-                {
-                    "title": "Покажи город на карте",
-                    "url": cities[city]["url"],
-                    "hide": True
-                }
-            ] + res['response'].get("buttons", [])
+            sessionStorage[user_id]["is_city_guessed"] = True
+            sessionStorage[user_id]['attempt'] = 1
+            res['response']['text'] = 'Правильно! А в какой стране этот город?'
             sessionStorage[user_id]['guessed_cities'].append(city)
-            sessionStorage[user_id]['game_started'] = False
             return
         else:
             # если нет
@@ -198,7 +217,7 @@ def play_game(res, req):
     sessionStorage[user_id]['attempt'] += 1
 
 
-def get_city(req):
+def get_geo_entity(req):
     # перебираем именованные сущности
     for entity in req['request']['nlu']['entities']:
         # если тип YANDEX.GEO, то пытаемся получить город(city), если нет, то возвращаем None
