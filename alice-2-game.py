@@ -156,7 +156,7 @@ def play_game(res, req):
     else:
         # сюда попадаем, если попытка отгадать не первая
         city = sessionStorage[user_id]['city']
-        if sessionStorage[user_id]["is_city_guessed"]:
+        if sessionStorage[user_id].get("is_city_guessed", False):
             # угадываем страну
             if get_geo_entity(req) == cities["city"]["country"]:
                 res['response']['text'] = 'Правильно! Сыграем ещё?'
