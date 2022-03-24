@@ -121,7 +121,7 @@ def handle_dialog(res, req):
                 'title': 'Нет',
                 'hide': True
             }
-        ]
+        ] + res['response'].get("buttons", [])
 
 
 def play_game(res, req):
@@ -158,7 +158,7 @@ def play_game(res, req):
                     'title': 'Нет',
                     'hide': True
                 }
-            ]
+            ] + res['response'].get("buttons", [])
             sessionStorage[user_id]['guessed_cities'].append(city)
             sessionStorage[user_id]['game_started'] = False
             return
