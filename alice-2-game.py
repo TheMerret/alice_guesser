@@ -86,6 +86,7 @@ def handle_dialog(res, req):
                                              'hide': True
                                          }
                                      ] + res['response'].get("buttons", [])
+        return
     # У нас уже есть имя, и теперь мы ожидаем ответ на предложение сыграть.
     # В sessionStorage[user_id]['game_started'] хранится True или False в зависимости от того,
     # начал пользователь игру или нет.
