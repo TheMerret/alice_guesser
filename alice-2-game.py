@@ -166,6 +166,11 @@ def play_game(res, req):
                 {
                     'title': 'Нет',
                     'hide': True
+                },
+                {
+                    "title": "Покажи город на карте",
+                    "url": cities[city]["url"],
+                    "hide": True
                 }
             ] + res['response'].get("buttons", [])
             sessionStorage[user_id]['guessed_cities'].append(city)
