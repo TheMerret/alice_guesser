@@ -176,6 +176,7 @@ def play_game(res, req):
                                                  }
                                              ] + res['response'].get("buttons", [])
                 sessionStorage[user_id]['game_started'] = False
+                sessionStorage[user_id]["is_city_guessed"] = False
                 return
             else:
                 if attempt == 4:
@@ -183,6 +184,7 @@ def play_game(res, req):
                                                f' Это {cities["city"]["country"].capitalize()}.'
                                                f' Сыграем ещё?')
                     sessionStorage[user_id]['game_started'] = False
+                    sessionStorage[user_id]["is_city_guessed"] = False
                     return
                 else:
                     res['response']['text'] = "Неверно. Поробуйте еще раз."
