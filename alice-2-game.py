@@ -158,7 +158,7 @@ def play_game(res, req):
         city = sessionStorage[user_id]['city']
         if sessionStorage[user_id].get("is_city_guessed", False):
             # угадываем страну
-            if get_geo_entity(req) == cities["city"]["country"]:
+            if get_geo_entity(req, "country") == cities[city]["country"]:
                 res['response']['text'] = 'Правильно! Сыграем ещё?'
                 res['response']['buttons'] = [
                                                  {
@@ -187,14 +187,13 @@ def play_game(res, req):
                 else:
                     res['response']['text'] = "Неверно. Поробуйте еще раз."
         # проверяем есть ли правильный ответ в сообщение
-        elif get_geo_entity(req) == city:
+        elif get_geo_entity(req, "city") == city:
             # если да, то добавляем город к sessionStorage[user_id]['guessed_cities'] и
             # отправляем пользователя на второй круг. Обратите внимание на этот шаг на схеме.
             sessionStorage[user_id]["is_city_guessed"] = True
             sessionStorage[user_id]['attempt'] = 1
             res['response']['text'] = 'Правильно! А в какой стране этот город?'
             sessionStorage[user_id]['guessed_cities'].append(city)
-            return
         else:
             # если нет
             if attempt == 3:
@@ -217,13 +216,13 @@ def play_game(res, req):
     sessionStorage[user_id]['attempt'] += 1
 
 
-def get_geo_entity(req):
+def get_geo_entity(req, geo_entity_type):
     # перебираем именованные сущности
     for entity in req['request']['nlu']['entities']:
         # если тип YANDEX.GEO, то пытаемся получить город(city), если нет, то возвращаем None
         if entity['type'] == 'YANDEX.GEO':
             # возвращаем None, если не нашли сущности с типом YANDEX.GEO
-            return entity['value'].get('city', None)
+            return entity['value'].get(geo_entity_type, None)
 
 
 def get_first_name(req):
