@@ -19,9 +19,18 @@ description = """
 """
 
 cities = {
-    'москва': ['1540737/daa6e420d33102bf6947', '213044/7df73ae4cc715175059e'],
-    'нью-йорк': ['1652229/728d5c86707054d4745f', '1030494/aca7ed7acefde2606bdc'],
-    'париж': ["1652229/f77136c2364eb90a3ea8", '123494/aca7ed7acefd12e606bdc']
+    'москва': {
+        "images": ['1540737/daa6e420d33102bf6947', '213044/7df73ae4cc715175059e'],
+        "url": "https://yandex.ru/maps/?mode=search&text=Москва"
+    },
+    'нью-йорк': {
+        "images": ['1652229/728d5c86707054d4745f', '1030494/aca7ed7acefde2606bdc'],
+        "url": "https://yandex.ru/maps/?mode=search&text=Нью-Йорк"
+                 },
+    'париж': {
+        "images": ["1652229/f77136c2364eb90a3ea8", '123494/aca7ed7acefd12e606bdc'],
+        "url": "https://yandex.ru/maps/?mode=search&text=Париж"
+    },
 }
 
 sessionStorage = {}
@@ -139,7 +148,7 @@ def play_game(res, req):
         res['response']['card'] = {}
         res['response']['card']['type'] = 'BigImage'
         res['response']['card']['title'] = 'Что это за город?'
-        res['response']['card']['image_id'] = cities[city][attempt - 1]
+        res['response']['card']['image_id'] = cities[city]["images"][attempt - 1]
         res['response']['text'] = 'Тогда сыграем!'
     else:
         # сюда попадаем, если попытка отгадать не первая
